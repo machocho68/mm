@@ -1,56 +1,56 @@
 # CLAUDE.md
 
-This file provides guidance for AI assistants working with this repository.
+このファイルは、このリポジトリで作業するAIアシスタント向けのガイドラインです。
 
-## Repository
+## リポジトリ情報
 
-- **Name**: mm
-- **Owner**: machocho68
+- **名前**: mm
+- **オーナー**: machocho68
 
-## Project Status
+## プロジェクトの状態
 
-This is a newly initialized repository. As the project evolves, update this file to reflect the current state.
+新しく初期化されたリポジトリです。プロジェクトの進展に合わせて、このファイルを最新の状態に更新してください。
 
-## Development Workflow
+## 開発ワークフロー
 
-### Git Conventions
+### Git の規約
 
-- Use descriptive commit messages in imperative mood (e.g., "Add feature X", "Fix bug in Y")
-- Keep commits focused — one logical change per commit
-- Do not force-push to shared branches
+- コミットメッセージは命令形で簡潔に記述する（例: 「機能Xを追加」「Yのバグを修正」）
+- コミットは1つの論理的な変更に集中させる
+- 共有ブランチへのフォースプッシュは禁止
 
-### Branch Naming
+### ブランチの命名規則
 
-- Feature branches: `feature/<description>`
-- Bug fixes: `fix/<description>`
-- AI-generated branches: `claude/<description>`
+- 機能ブランチ: `feature/<説明>`
+- バグ修正: `fix/<説明>`
+- AI生成ブランチ: `claude/<説明>`
 
-## Code Style
+## コードスタイル
 
-_Update this section as linting, formatting, and style conventions are established._
+_リンター・フォーマッター・スタイル規約が決まり次第、このセクションを更新してください。_
 
-## Testing
+## テスト
 
-_Update this section as the test framework and conventions are established._
+_テストフレームワークと規約が決まり次第、このセクションを更新してください。_
 
-## Build & Run
+## ビルド・実行
 
-_Update this section once the project has a build system and run instructions._
+_ビルドシステムと実行手順が決まり次第、このセクションを更新してください。_
 
-## Architecture
+## アーキテクチャ
 
-_Update this section as the project architecture takes shape._
+_プロジェクトのアーキテクチャが固まり次第、このセクションを更新してください。_
 
-## Key Files
+## 主要ファイル
 
-| File | Purpose |
-|------|---------|
-| `CLAUDE.md` | AI assistant guidance (this file) |
+| ファイル | 用途 |
+|----------|------|
+| `CLAUDE.md` | AIアシスタント向けガイドライン（本ファイル） |
 
-## Notes for AI Assistants
+## AIアシスタントへの注意事項
 
-- Read relevant files before making changes
-- Do not introduce unnecessary dependencies or over-engineer solutions
-- Keep changes minimal and focused on the task at hand
-- Run tests (when available) before committing
-- Do not commit secrets, credentials, or `.env` files
+- 変更を加える前に、関連ファイルを必ず読むこと
+- 不要な依存関係の追加や過剰な設計を避けること
+- 変更はタスクに必要な最小限に留めること
+- テストがある場合は、コミット前に必ず実行すること
+- シークレット、認証情報、`.env` ファイルをコミットしないこと
