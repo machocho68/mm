@@ -23,9 +23,7 @@
 const CONFIG = {
   // Gemini API キー（Google AI Studio で取得）
   // https://aistudio.google.com/apikey
-  // スクリプトプロパティ "GEMINI_API_KEY" から取得（下の getGeminiApiKey_() を使用）
-  // GAS エディタ: プロジェクトの設定 > スクリプトプロパティ に GEMINI_API_KEY を追加
-  GEMINI_API_KEY: "",
+  GEMINI_API_KEY: "AIzaSyCqjGjFCsbU1I-DFJSoKwcgKwRRiTxaqtM",
 
   // Gemini モデル
   GEMINI_MODEL: "gemini-2.5-flash",
@@ -57,13 +55,9 @@ const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
  * エントリーポイント: PDF のリネームを実行する
  */
 function main() {
-  // スクリプトプロパティから API キーを取得
-  if (!CONFIG.GEMINI_API_KEY) {
-    CONFIG.GEMINI_API_KEY = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY") || "";
-  }
   if (!CONFIG.GEMINI_API_KEY) {
     Logger.log("エラー: GEMINI_API_KEY が設定されていません。");
-    Logger.log("GAS エディタ > プロジェクトの設定 > スクリプトプロパティ に GEMINI_API_KEY を追加してください。");
+    Logger.log("https://aistudio.google.com/apikey で API キーを取得し、CONFIG に設定してください。");
     return;
   }
 
