@@ -1,5 +1,4 @@
 const CONFIG = {
-  GEMINI_API_KEY: PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY") || "",
   GEMINI_MODEL: "gemini-2.5-flash",
   FOLDER_ID: "1nX01Z1GH6TzqzlG3pEvVUi5tUimQy4QC",
   SPREADSHEET_ID: "",
@@ -9,12 +8,38 @@ const CONFIG = {
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
 
+/** スクリプトプロパティからAPIキーを取得。未設定ならダイアログで入力させて保存 */
+function getApiKey_() {
+  const props = PropertiesService.getScriptProperties();
+  let key = props.getProperty("GEMINI_API_KEY");
+  if (key) return key;
+
+  // 未設定の場合、入力ダイアログを表示
+  try {
+    key = Browser.inputBox(
+      "Gemini APIキー設定",
+      "APIキーを入力してください（https://aistudio.google.com/apikey で取得）:",
+      Browser.Buttons.OK_CANCEL
+    );
+    if (!key || key === "cancel") return null;
+    key = key.trim();
+  } catch (e) {
+    Logger.log("ダイアログを表示できません。setupApiKey() を実行してAPIキーを設定してください。");
+    return null;
+  }
+  props.setProperty("GEMINI_API_KEY", key);
+  Logger.log("APIキーをスクリプトプロパティに保存しました");
+  return key;
+}
+
 /** エントリーポイント */
 function main() {
-  if (!CONFIG.GEMINI_API_KEY) {
+  const apiKey = getApiKey_();
+  if (!apiKey) {
     Logger.log("エラー: GEMINI_API_KEY が未設定です");
     return;
   }
+  CONFIG.GEMINI_API_KEY = apiKey;
 
   const folder = DriveApp.getFolderById(CONFIG.FOLDER_ID);
   const sheet = getOrCreateLogSheet_();
@@ -193,6 +218,17 @@ function appendLog_(sheet, record) {
     record.timestamp, record.oldName, record.newName,
     record.summary || "", record.fileId, record.fileUrl,
   ]);
+}
+
+/** APIキーを手動設定する（ダイアログが出ない場合はこれを実行） */
+function setupApiKey() {
+  const key = "ここに新しいAPIキーを貼り付けてから実行";
+  if (key === "ここに新しいAPIキーを貼り付けてから実行") {
+    Logger.log("この関数のkeyの値を、実際のAPIキーに書き換えてから実行してください");
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty("GEMINI_API_KEY", key);
+  Logger.log("APIキーを保存しました。main() を実行してください。");
 }
 
 /** フォルダ内のPDF一覧を取得 */
