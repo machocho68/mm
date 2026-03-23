@@ -162,26 +162,53 @@ function processFile_(file) {
  * Google Drive の OCR 機能を使って PDF からテキストを抽出する
  *
  * PDFをGoogle Docsに一時変換してテキストを取得し、変換したDocsは削除する
+ * Drive REST API v3 を直接呼び出す方式（サービス追加のバージョンに依存しない）
  */
 function extractTextFromPdf_(file) {
-  let docFile = null;
+  let tempDocId = null;
   try {
-    // PDF を Google Docs に変換（OCR が自動的に適用される）
-    const resource = {
-      title: file.getName().replace(".pdf", "") + "_ocr_temp",
-      mimeType: "application/pdf",
+    const blob = file.getBlob();
+    const fileName = file.getName().replace(/\.pdf$/i, "") + "_ocr_temp";
+
+    // Drive API v3 REST エンドポイントで PDF → Google Docs に変換（OCR適用）
+    const metadata = {
+      name: fileName,
+      mimeType: "application/vnd.google-apps.document",
     };
 
-    const blob = file.getBlob();
+    const boundary = "===BOUNDARY===";
+    const requestBody =
+      "--" + boundary + "\r\n" +
+      "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
+      JSON.stringify(metadata) + "\r\n" +
+      "--" + boundary + "\r\n" +
+      "Content-Type: application/pdf\r\n" +
+      "Content-Transfer-Encoding: base64\r\n\r\n" +
+      Utilities.base64Encode(blob.getBytes()) + "\r\n" +
+      "--" + boundary + "--";
 
-    // Drive API v2 を使って OCR 変換
-    const docFileResource = Drive.Files.insert(resource, blob, {
-      ocr: true,
-      ocrLanguage: "ja",
-    });
+    const response = UrlFetchApp.fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&ocrLanguage=ja",
+      {
+        method: "post",
+        contentType: "multipart/related; boundary=" + boundary,
+        headers: {
+          Authorization: "Bearer " + ScriptApp.getOAuthToken(),
+        },
+        payload: requestBody,
+        muteHttpExceptions: true,
+      }
+    );
 
-    docFile = DriveApp.getFileById(docFileResource.id);
-    const doc = DocumentApp.openById(docFileResource.id);
+    if (response.getResponseCode() !== 200) {
+      throw new Error("Drive API エラー: " + response.getContentText());
+    }
+
+    const result = JSON.parse(response.getContentText());
+    tempDocId = result.id;
+
+    // Google Docs からテキストを取得
+    const doc = DocumentApp.openById(tempDocId);
     let text = doc.getBody().getText();
 
     // テキストの長さを制限
@@ -195,9 +222,9 @@ function extractTextFromPdf_(file) {
     return null;
   } finally {
     // 一時ファイルを削除
-    if (docFile) {
+    if (tempDocId) {
       try {
-        docFile.setTrashed(true);
+        DriveApp.getFileById(tempDocId).setTrashed(true);
       } catch (e) {
         Logger.log(`一時ファイル削除エラー: ${e.message}`);
       }
