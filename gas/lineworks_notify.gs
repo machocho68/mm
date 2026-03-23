@@ -66,10 +66,8 @@ function setupTrigger() {
   }
 
   // 定期実行トリガーを作成
-  ScriptApp.newTrigger("checkForNewFiles")
-    .timeDriven()
-    .everyMinutes(LW_CONFIG.CHECK_INTERVAL_MINUTES)
-    .create();
+  var builder = ScriptApp.newTrigger("checkForNewFiles");
+  builder.timeBased().everyMinutes(LW_CONFIG.CHECK_INTERVAL_MINUTES).create();
 
   Logger.log(
     `トリガーを設定しました: ${LW_CONFIG.CHECK_INTERVAL_MINUTES} 分間隔で checkForNewFiles を実行`
