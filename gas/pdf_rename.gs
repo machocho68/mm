@@ -186,6 +186,12 @@ function analyzeWithGemini_(file) {
   const blob = file.getBlob();
   const base64Data = Utilities.base64Encode(blob.getBytes());
 
+  // 元ファイル名から日付を抽出（フォールバック用）
+  const today = Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd");
+  const origName = file.getName();
+  const dateMatch = origName.match(/(\d{8})/);
+  const fallbackDate = dateMatch ? dateMatch[1] : today;
+
   const prompt = `あなたはスキャンされたPDF文書を解析するアシスタントです。
 このPDFの内容を読み取り、以下のJSON形式で回答してください。
 他のテキストは一切出力せず、JSONのみ返してください。
@@ -196,7 +202,9 @@ function analyzeWithGemini_(file) {
 }
 
 ファイル名のルール:
-- 日付が文書内にあれば YYYYMMDD 形式で先頭に付ける（なければ省略）
+- 必ず先頭に日付を YYYYMMDD 形式で付けること
+- 文書内に日付があればそれを使う（令和・平成の和暦は西暦に変換）
+- 文書内に日付が見つからない場合は「${fallbackDate}」を使う
 - 文書種類（請求書、見積書、契約書、領収書、報告書、議事録、通知書、申請書など）を付ける
 - 概要は簡潔に（会社名や件名など主要な情報）
 - ファイル名に使えない文字（/ \\ : * ? " < > |）は使わない
