@@ -1,5 +1,5 @@
 const CONFIG = {
-  GEMINI_API_KEY: "AIzaSyCqjGjFCsbU1I-DFJSoKwcgKwRRiTxaqtM",
+  GEMINI_API_KEY: PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY") || "",
   GEMINI_MODEL: "gemini-2.5-flash",
   FOLDER_ID: "1nX01Z1GH6TzqzlG3pEvVUi5tUimQy4QC",
   SPREADSHEET_ID: "",
@@ -134,8 +134,11 @@ function analyzeWithGemini_(file) {
     throw new Error(`Gemini API エラー (${response.getResponseCode()}): ${response.getContentText()}`);
   }
 
-  const text = JSON.parse(response.getContentText()).candidates[0].content.parts[0].text;
+  let text = JSON.parse(response.getContentText()).candidates[0].content.parts[0].text;
   Logger.log(`Gemini応答: ${text}`);
+
+  // マークダウンのコードブロック(```json ... ```)を除去
+  text = text.replace(/```json\s*/g, "").replace(/```\s*/g, "");
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
