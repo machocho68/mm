@@ -102,6 +102,21 @@ function processFile_(file) {
   if (!baseName) {
     return { skipped: true, oldName, reason: "有効なファイル名を生成できませんでした" };
   }
+
+  // 先頭に8桁の日付(YYYYMMDD)が無ければ付与する
+  if (!/^\d{8}/.test(baseName)) {
+    const dateMatch = baseName.match(/(\d{8})/);
+    if (dateMatch) {
+      // ファイル名中に日付があれば先頭に移動
+      baseName = dateMatch[1] + "_" + baseName.replace(dateMatch[1], "").replace(/^_|_$/g, "").replace(/_+/g, "_");
+    } else {
+      // 日付が全く無い場合はフォールバック日付を付与
+      const today = Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd");
+      const oldDateMatch = oldName.match(/(\d{8})/);
+      baseName = (oldDateMatch ? oldDateMatch[1] : today) + "_" + baseName;
+    }
+  }
+
   if (baseName.length > CONFIG.MAX_FILENAME_LENGTH) {
     baseName = baseName.substring(0, CONFIG.MAX_FILENAME_LENGTH);
   }
