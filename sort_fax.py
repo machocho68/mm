@@ -18,7 +18,7 @@ from pathlib import Path
 
 import anthropic
 
-MODEL = "claude-opus-4-7"
+MODEL = "claude-opus-5"
 
 CATEGORIES = [
     "注文書",
